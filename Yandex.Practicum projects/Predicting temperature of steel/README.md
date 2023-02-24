@@ -1,0 +1,28 @@
+| Project name              | Description   | Libraries used | Status |
+| ------------------------- | ------------- | -------------- | ------ |
+| Predicting steel melting temperature   | In order to optimize production costs, the steel company decided to reduce power consumption in the steel processing stage.| Pandas, scikit-learn, matplotlib, seaborn, optuna, CatBoost, LightGBM | Finished |
+
+**Objective:** develop a model that predicts the temperature of the steel at the last measurement for the batch.
+
+**Summary:** 
+* We were asked to optimize production costs by predicting the steel temperature at the last measurement for a batch (a regression task, not a time series prediction task). The data consisted of several tables containing information from different sensors. For example, the target attribute is contained in the temperature table;
+
+* The presence of missing values was characteristic of the tables with the amounts of alloys (15 types of bulk materials and 9 types of wire) used in the alloying process. The peculiarity of steel alloying is that, in order to obtain steel of a certain quality, it is necessary to add different materials in order to obtain a certain chemical composition of the corresponding quality. Therefore, the nans were filled with 0, since this material was not added specifically for this batch;
+
+* Some of the columns had style violations - the column names have been changed to a single style and Latin characters, also snake case has been used. Columns containing dates are converted to pandas datetime format (start and end of arc heating, temperature measurement time). Columns containing integer values are converted to int format (volume of used bulk additives, alloy temperature);
+
+* In some tables there were anomalous values. For example, for bulk materials, the outliers were batch number 322 - overestimated use of the material number 12 in the volume of 1849 units. There were also anomalous values of melting temperature, values less than 1350 degrees Celsius were evaluated as outliers. Batches with a single temperature measurement were also noted. For models, batches with more than one measurement were used;
+
+* For the table with data from electrodes, such attributes as total power (square root of the sum of squares of reactive and active power), alloy heating time in seconds (delta between the end time and the beginning of heating), number of heating starts for each batch were created. In addition, the table is prepared for further integration with other data by aggregating the indicators for each batch (sum of used power, sum of heating time duration, number of heating starts of each batch). For the tables with the use of bulk and wire materials, the calculation of the total amount of their use and the proportions of each of the additives involved in the production process was carried out. For the table with temperature measurement data, the data are grouped by batch number, and the characteristics of the first and last (target characteristic) temperature measurements are created, as well as the time elapsed between the first and last measurements;
+
+* When the tables were combined, the temperature measurement table became the main table because not all batches went through the full processing cycle. Tables with feed times for bulk and wire materials were no longer needed;
+
+* The correlation analysis showed a high correlation between the heating time in seconds and the total power used, as well as the percentage of wire material number 8 used with bulk material number 9. This fact indicated the presence of multicollinearity between these features. These features were removed for the linear model. For all other models, the full set of features was used;
+
+* The best model using cross validation on the training set is CatBoost gradient boosting model with the following hyperparameters: `max_depth` - 5, `n_estimators` - 260, `learning_rate` - 0.07998558629891359, `random_seed` - 160123, `loss_function` - RMSE. The MAE metric on cross-validation was ~5.69 degrees. The quality of the developed model for predicting the alloy melting temperature is significantly higher than that of the constant model. The MAE metric on the test set for the developed model is ~5.52, while for the constant model it is ~7.65;
+
+* The greatest influence on the final batch temperature is the first temperature measurement, the moment the molten steel is fed into the ladle for alloying. The hotter the steel enters the alloying process, the easier it is to heat it further and to achieve higher temperatures. Next, the final temperature is influenced by the total power, the duration of heating, and the time between measurements, which is also logical. The more electrode power used, the hotter the steel will be. And the more time between measurements, the longer the charge has been heated. Next in importance is the bulk material 6 and the wire material 2. The first three factors account for about 60% of the importance;
+
+* To save energy and production costs, it is therefore important to control the temperature when the steel arrives for the alloying process. For example, the temperature can be influenced by the speed at which the ladle arrives at the plant after the previous alloying process or by the time it spends in the processing queue;
+
+* In fact, this model is the primary step in analyzing the influence of factors on the final alloy temperature. Other processes that precede alloying should be further considered and the possibility of influencing and controlling the temperature during such processes should be evaluated.

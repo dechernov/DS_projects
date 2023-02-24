@@ -1,0 +1,12 @@
+| Project name              | Description   | Libraries used | Status |
+| ------------------------- | ------------- | -------------- | ------ |
+| Predicting car price   | A used car sales company is developing an application to quickly determine the market value of a car in order to attract new customers.| Pandas, scikit-learn, matplotlib, optuna, CatBoost, LightGBM| Finished |
+
+**Objective:** develop a model to determine the market value of a car based on historical data about the car's technical characteristics, equipment, and price.
+
+**Tasks:** consider and explore different models (including classical algorithms and the LightGBM model) according to prediction quality, prediction, and learning time.
+
+**Summary:** 
+* During the data preprocessing for the development of the car value prediction model, some of the columns were transformed and two new features were created - the age of the car (years) and the length of its sale (days). It should be noted that the remaining part of the features, in our opinion, does not carry any useful information and may potentially lead to overfitting of the model. These are the columns that primarily characterize the user's activity on the site (date of the form creation, number of vehicle photos, postal code of the form owner, date of the last user activity) and other information (date of the form download from the database, vehicle registration month). These columns have been removed;
+* Dataset is characterized by missing values in the columns containing information about car repair, vehicle type, fuel type, transmission type and car model. It was not possible to fill the nans implicitly, because for example the same car model can be characterized by different characteristics (sedans and golf cars, diesel and gasoline engines). For this reason, the missing values were filled with value 'unknown'. There were also anomalous values in the dataset. So for power, zero values and values greater than 300 hp were removed. For the value of the car, zeros were removed. For the age column, values greater than 35 and less than 0 were filtered out;
+* The best model in terms of error, training time, and prediction on the training set is the LGBM model. The training time was ~1.10 sec, the prediction time was ~0.09 sec, and the RMSE metric was ~1442. On the test sample, the prediction time was ~0.11 sec and the quality metric was ~1419.

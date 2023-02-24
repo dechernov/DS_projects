@@ -1,0 +1,12 @@
+| Project name              | Description   | Libraries used | Status |
+| ------------------------- | ------------- | -------------- | ------ |
+| Forecasting taxi demand   | Online taxi service plans to predict the number of taxi orders for the next hour to schedule more drivers during peak hours.| Pandas, scikit-learn, matplotlib, optuna, CatBoost, LightGBM, Prophet | Finished |
+
+**Objective:** develop a machine learning model for predicting the number of orders for the next hour, allocating peak hours.
+
+**Tasks:** analyze the given time series data, determine peak hours, and consider several models with hyperparameter optimization on the training set. The overall RMSE metric should be less than 48 on the test set.
+
+**Summary:** 
+* A quick data analysis shows that the original dataset is characterized by 10-minute intervals. Considering that the task is to predict the number of taxi orders for the next hour, the data has been resampled into 1-hour intervals with the sum of orders for each hour. There are no missing values in the dataset and the data are monotonous. The first observation is on March 1, 2018, and the last one is on August 31 of the same year. The time delta is 183 days and 23 hours;
+* Throughout the research horizon (March 2018-August 2018), there is a trend towards an increase in the volume of orders at airports. The decomposition of the series into components confirms the thesis of a growing trend. Taxi order volumes are characterized by weekly and daily seasonality. Thus, peaks occur at the end of the week (Friday) and the beginning of the week (Monday), and order volumes decline from midnight to ~6 am. From about 6 am to midnight, the growth of taxi orders begins, with peaks around 9:00 am, 4:00 pm, and midnight. The following features were created: hour of the order and day of the week because the data contains daily and weekly seasonalities, lagging and moving averages values;
+* CatBoost performed best on the training set. The RMSE on the training set is ~18.32, while the MAE is ~14.04, i.e. the model is wrong on average by 14.04 orders. The RMSE on the test set is ~37.24, while the MAE is ~26.50. However, the built models can be improved in the future. For example, it is possible to analyze historical data on the number of arrivals and departures from airports with the type of aircraft (the goal is to determine an approximate number of passengers) and feed this number into the model as a feature.
